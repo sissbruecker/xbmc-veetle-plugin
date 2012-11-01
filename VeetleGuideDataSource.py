@@ -2,10 +2,11 @@ import urllib2
 import simplejson as json
 import VeetleData
 
-__author__ = 'sissbruecker'
-
 URL_VEETLE = 'http://www.veetle.com'
-URL_STREAM = URL_VEETLE + '/index.php/channel/ajaxStreamLocation/%s/flash'
+URL_VEETLE_STREAM_URL = URL_VEETLE + '/index.php/channel/ajaxStreamLocation/%s/flash'
+
+URL_VEETLE_GUIDE_LOAD_CHANNELS = "http://veetleguide.appspot.com/load-channels"
+URL_VEETLE_GUIDE_LOAD_CHANNEL = "http://veetleguide.appspot.com/load-channel?id="
 
 try:
     import StorageServer
@@ -16,10 +17,7 @@ except:
 class VeetleGuideDataSource:
 
     def __init__(self):
-        self.loadChannelsUrl = "http://veetleguide.appspot.com/load-channels"
-        self.loadChannelUrl = "http://veetleguide.appspot.com/load-channel?id="
         self.cache = StorageServer.StorageServer("veetle", 1)
-        self.cache.dbg = True
 
     def loadChannels(self):
 
@@ -30,11 +28,8 @@ class VeetleGuideDataSource:
             jsonData = self.cache.get("channels")
 
             if jsonData is None or len(jsonData) == 0:
-                print("Loading channels...")
-                response = urllib2.urlopen(self.loadChannelsUrl)
-                jsonData = response.read()
-                print("Response type: " + str(type(jsonData)))
-                jsonData = jsonData.decode("utf-8")
+                response = urllib2.urlopen(URL_VEETLE_GUIDE_LOAD_CHANNELS)
+                jsonData = response.read().decode("utf-8")
                 self.cache.set("channels", jsonData)
 
             jsonChannels = json.loads(jsonData)
@@ -49,7 +44,7 @@ class VeetleGuideDataSource:
 
     def loadChannelStreamUrl(self, channelId):
 
-        url = URL_STREAM % channelId
+        url = URL_VEETLE_STREAM_URL % channelId
 
         response = urllib2.urlopen(url)
         jsonContent = json.loads(response.read())

@@ -4,8 +4,6 @@ import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 addon = xbmcaddon.Addon()
 akamaiProxyServer = xbmc.translatePath(addon.getAddonInfo('path') + "/akamaiSecureHD.py")
 
-__author__ = 'sasch_000'
-
 def getUrl(url):
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/13.0')

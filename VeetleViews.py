@@ -2,13 +2,13 @@ import VeetleData
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import base64
 
-__author__ = 'sissbruecker'
 __settings__ = xbmcaddon.Addon(id='plugin.video.veetle')
 __language__ = __settings__.getLocalizedString
 
-URL_CHANNEL = '?channel='
-URL_CATEGORY = '?category='
-URL_STREAM = 'http://127.0.0.1:64653/veetle/%s'
+URL_VIEW_CHANNEL = '?channel='
+URL_VIEW_CATEGORY = '?category='
+
+URL_AKAMAI_PROXY = 'http://127.0.0.1:64653/veetle/%s'
 
 class VeetleViews:
 
@@ -18,10 +18,10 @@ class VeetleViews:
         self.dataSource = dataSource
 
     def buildChannelUrl(self, channel):
-        return self.baseUrl + URL_CHANNEL + channel.channelId
+        return self.baseUrl + URL_VIEW_CHANNEL + channel.channelId
 
     def buildCategoryUrl(self, categoryId):
-        return self.baseUrl + URL_CATEGORY + str(categoryId)
+        return self.baseUrl + URL_VIEW_CATEGORY + str(categoryId)
 
     def createChannelListItem(self, channel):
 
@@ -55,7 +55,7 @@ class VeetleViews:
 
     def renderCategory(self, queryUrl):
 
-        categoryId = queryUrl[len(URL_CATEGORY):].strip()
+        categoryId = queryUrl[len(URL_VIEW_CATEGORY):].strip()
 
         # Load the channel list
         channels = self.dataSource.loadChannels()
@@ -80,10 +80,10 @@ class VeetleViews:
     def renderChannel(self, queryUrl):
 
         #Play a stream with the given channel id
-        channelId = queryUrl[len(URL_CHANNEL):].strip()
+        channelId = queryUrl[len(URL_VIEW_CHANNEL):].strip()
         channelStreamUrl = self.dataSource.loadChannelStreamUrl(channelId)
         VIDb64 = base64.encodestring(channelStreamUrl).replace('\n', '')
-        fullUrl = URL_STREAM % VIDb64
+        fullUrl = URL_AKAMAI_PROXY % VIDb64
 
         if channelStreamUrl:
             xbmcplugin.setResolvedUrl(
@@ -101,11 +101,11 @@ class VeetleViews:
 
     def renderUrl(self, queryUrl):
 
-        if queryUrl.startswith(URL_CHANNEL):
+        if queryUrl.startswith(URL_VIEW_CHANNEL):
             self.renderChannel(queryUrl)
             return
 
-        if queryUrl.startswith(URL_CATEGORY):
+        if queryUrl.startswith(URL_VIEW_CATEGORY):
             self.renderCategory(queryUrl)
             return
 

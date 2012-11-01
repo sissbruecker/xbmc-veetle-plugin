@@ -1,5 +1,3 @@
-__author__ = 'sasch_000'
-
 class VeetleCategory:
 
     def __init__(self, id, title):
