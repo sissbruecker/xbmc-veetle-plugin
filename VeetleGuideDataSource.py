@@ -65,12 +65,11 @@ def parseChannel(jsonChannel):
     if 'currentItem' in jsonChannel:
 
         jsonScheduleItem = jsonChannel['currentItem']
-        jsonPlayListItem = jsonScheduleItem['playListItem']
 
         currentItem = VeetleData.VeetleScheduleItem()
-        currentItem.title = jsonPlayListItem['title']
-        currentItem.description = jsonPlayListItem['description']
-        currentItem.duration = jsonPlayListItem['duration']
+        currentItem.title = jsonScheduleItem['title']
+        currentItem.description = jsonScheduleItem['description']
+        currentItem.duration = jsonScheduleItem['duration']
         currentItem.startTime = jsonScheduleItem['startTime']
 
         channel.currentItem = currentItem
