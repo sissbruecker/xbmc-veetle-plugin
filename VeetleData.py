@@ -13,6 +13,9 @@ class VeetleChannel:
         self.description = ''
         self.categoryId = ''
 
+        self.popularityIndex = 0
+        self.bitRate = 0
+
         self.logoUrl = ''
 
         self.currentItem = None
@@ -28,32 +31,32 @@ class VeetleScheduleItem:
         self.startTime = 0
 
 CategoryAll = VeetleCategory('0', 'All')
-CategoryAnimation = VeetleCategory('60', 'Animation')
-CategoryComedy = VeetleCategory('50', 'Comedy')
-CategoryEducation = VeetleCategory('90', 'Education')
-CategoryGaming = VeetleCategory('40', 'Gaming')
-CategoryMobile = VeetleCategory('110', 'Mobile')
 CategoryEntertainment = VeetleCategory('10', 'Entertainment')
 CategoryShows = VeetleCategory('20', 'Shows')
+CategoryAnimation = VeetleCategory('60', 'Animation')
 CategorySports = VeetleCategory('80', 'Sports')
+CategoryComedy = VeetleCategory('50', 'Comedy')
 CategoryMusic = VeetleCategory('70', 'Music')
+CategoryEducation = VeetleCategory('90', 'Education')
+CategoryGaming = VeetleCategory('40', 'Gaming')
 CategoryNews = VeetleCategory('30', 'News')
 CategoryReligion = VeetleCategory('100', 'Religion')
+CategoryMobile = VeetleCategory('110', 'Mobile')
 
 Categories = [
     CategoryAll,
-    CategoryAnimation,
-    CategoryComedy,
-    CategoryEducation,
-    CategoryGaming,
-    CategoryMobile,
     CategoryEntertainment,
     CategoryShows,
+    CategoryAnimation,
     CategorySports,
+    CategoryComedy,
     CategoryMusic,
+    CategoryEducation,
+    CategoryGaming,
     CategoryNews,
-    CategoryReligion
-]
+    CategoryReligion,
+    CategoryMobile
+    ]
 
 CategoryMap = {
     CategoryAll.id: CategoryAll,

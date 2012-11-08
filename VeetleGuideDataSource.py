@@ -1,5 +1,7 @@
+from datetime import date
 import urllib2
 import simplejson as json
+import datetime
 import VeetleData
 
 URL_VEETLE = 'http://www.veetle.com'
@@ -7,6 +9,7 @@ URL_VEETLE_STREAM_URL = URL_VEETLE + '/index.php/channel/ajaxStreamLocation/%s/f
 
 URL_VEETLE_GUIDE_LOAD_CHANNELS = "http://veetleguide.appspot.com/load-channels"
 URL_VEETLE_GUIDE_LOAD_CHANNEL = "http://veetleguide.appspot.com/load-channel?id="
+URL_VEETLE_GUIDE_LOAD_SCHEDULE = "http://veetleguide.appspot.com/load-schedule"
 
 try:
     import StorageServer
@@ -17,7 +20,7 @@ except:
 class VeetleGuideDataSource:
 
     def __init__(self):
-        self.cache = StorageServer.StorageServer("veetle", 1)
+        self.cache = StorageServer.StorageServer("plugin.video.veetle", 1)
 
     def loadChannels(self):
 
@@ -25,14 +28,14 @@ class VeetleGuideDataSource:
 
         try:
 
-            jsonData = self.cache.get("channels")
+            jsonChannels = self.cache.get("channels")
 
-            if jsonData is None or len(jsonData) == 0:
+            if jsonChannels is None or len(jsonChannels) == 0:
                 response = urllib2.urlopen(URL_VEETLE_GUIDE_LOAD_CHANNELS)
-                jsonData = response.read().decode("utf-8")
-                self.cache.set("channels", jsonData)
+                jsonChannels = response.read().decode("utf-8")
+                self.cache.set("channels", jsonChannels)
 
-            jsonChannels = json.loads(jsonData)
+            jsonChannels = json.loads(jsonChannels)
 
             for jsonChannel in jsonChannels:
                 channels.append(parseChannel(jsonChannel))
@@ -41,6 +44,29 @@ class VeetleGuideDataSource:
             print 'Error loading channel list: ' + repr(error_info)
 
         return channels
+
+    def loadSchedule(self):
+
+        schedule = []
+
+        try:
+
+            jsonSchedule = self.cache.get("schedule")
+
+            if jsonSchedule is None or len(jsonSchedule) == 0:
+                response = urllib2.urlopen(URL_VEETLE_GUIDE_LOAD_SCHEDULE)
+                jsonSchedule = response.read().decode("utf-8")
+                self.cache.set("schedule", jsonSchedule)
+
+            jsonSchedule = json.loads(jsonSchedule)
+
+            for jsonScheduleItem in jsonSchedule:
+                schedule.append(parseScheduleItem(jsonScheduleItem))
+
+        except ValueError, error_info:
+            print 'Error loading schedule: ' + repr(error_info)
+
+        return schedule
 
     def loadChannelStreamUrl(self, channelId):
 
@@ -59,19 +85,25 @@ def parseChannel(jsonChannel):
     channel.title = jsonChannel['title']
     channel.description = jsonChannel['description']
     channel.categoryId = str(jsonChannel['categoryId'])
-    channel.smallLogoUrl = jsonChannel['logoUrl']
-    channel.largeLogoUrl = jsonChannel['logoUrl']
+    channel.popularityIndex = jsonChannel['popularityIndex']
+    channel.bitRate = jsonChannel['bitRate']
+    channel.logoUrl = jsonChannel['logoUrl']
 
     if 'currentItem' in jsonChannel:
 
         jsonScheduleItem = jsonChannel['currentItem']
 
-        currentItem = VeetleData.VeetleScheduleItem()
-        currentItem.title = jsonScheduleItem['title']
-        currentItem.description = jsonScheduleItem['description']
-        currentItem.duration = jsonScheduleItem['duration']
-        currentItem.startTime = jsonScheduleItem['startTime']
-
-        channel.currentItem = currentItem
+        channel.currentItem = parseScheduleItem(jsonScheduleItem)
 
     return channel
+
+def parseScheduleItem(jsonScheduleItem):
+
+    scheduleItem = VeetleData.VeetleScheduleItem()
+    scheduleItem.title = jsonScheduleItem['title']
+    scheduleItem.description = jsonScheduleItem['description']
+    scheduleItem.duration = datetime.timedelta(milliseconds=jsonScheduleItem['duration'])
+    scheduleItem.startTime = datetime.datetime.fromtimestamp(jsonScheduleItem['startTime'] / 1000.0)
+    scheduleItem.channelId = jsonScheduleItem['channelId']
+
+    return scheduleItem
