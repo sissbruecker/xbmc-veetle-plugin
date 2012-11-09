@@ -1,3 +1,13 @@
+[B]Version 0.2.0[/B]
+- Refactoring to several modules/objects
+- Loads channel/schedule data from veetleguide.appspot.com
+- Caches channel/schedule data to prevent reloading of data for each view
+- Sort channels by popularity / current viewers
+- Show channel count next to category
+- Show current schedule item next to channel in category view
+- Added schedule view
+- Improved label formatting
+
 [B]Version 0.1.6[/B]
 - fix breakage due to site changes
 
