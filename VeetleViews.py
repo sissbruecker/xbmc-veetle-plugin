@@ -81,17 +81,6 @@ class VeetleViews:
                 categoriesListItem,
                 isFolder=True)
 
-        #categoriesListItem = xbmcgui.ListItem(
-        #    'Search',
-        #    iconImage='',
-        #    thumbnailImage='')
-
-        #xbmcplugin.addDirectoryItem(
-        #        self.pluginHandle,
-        #        self.baseUrl + URL_VIEW_SEARCH,
-        #        categoriesListItem,
-        #        isFolder=True)
-
         xbmcplugin.endOfDirectory(self.pluginHandle)
 
     def renderCategories(self, queryUrl):
@@ -170,9 +159,6 @@ class VeetleViews:
 
         # Load the schedule list
         schedule = self.dataSource.loadSchedule()
-
-        # Sort channels by popularity
-        #schedule = sorted(schedule, key=lambda channel: channel.popularityIndex, reverse=True)
 
         for scheduleItem in schedule:
 

@@ -1,8 +1,11 @@
 import urllib2
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
+import Logger
 
 addon = xbmcaddon.Addon()
 akamaiProxyServer = xbmc.translatePath(addon.getAddonInfo('path') + "/akamaiSecureHD.py")
+
+log = Logger.Logger('VeetleProxyServer')
 
 def getUrl(url):
     req = urllib2.Request(url)
@@ -14,9 +17,14 @@ def getUrl(url):
 
 def run():
     try:
+        log.debug('Checking proxy server...')
         getUrl("http://127.0.0.1:64653/version")
         proxyIsRunning = True
+        log.debug('Proxy server is running')
     except:
         proxyIsRunning = False
+        log.debug('Proxy server is not running')
     if not proxyIsRunning:
+        log.notice('Starting proxy server...')
         xbmc.executebuiltin('RunScript(' + akamaiProxyServer + ')')
+        log.notice('Proxy server started')

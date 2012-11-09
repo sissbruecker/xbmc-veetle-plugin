@@ -1,3 +1,7 @@
+[B]Version 0.2.1[/B]
+- Fixed caching problem - channels/schedule data is now only cached for 10 minutes
+- Added some basic logging
+
 [B]Version 0.2.0[/B]
 - Refactoring to several modules/objects
 - Loads channel/schedule data from veetleguide.appspot.com

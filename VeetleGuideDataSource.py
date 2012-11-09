@@ -2,25 +2,24 @@ from datetime import date
 import urllib2
 import simplejson as json
 import datetime
+import Logger
+import VeetleCache
 import VeetleData
 
 URL_VEETLE = 'http://www.veetle.com'
 URL_VEETLE_STREAM_URL = URL_VEETLE + '/index.php/channel/ajaxStreamLocation/%s/flash'
 
 URL_VEETLE_GUIDE_LOAD_CHANNELS = "http://veetleguide.appspot.com/load-channels"
-URL_VEETLE_GUIDE_LOAD_CHANNEL = "http://veetleguide.appspot.com/load-channel?id="
 URL_VEETLE_GUIDE_LOAD_SCHEDULE = "http://veetleguide.appspot.com/load-schedule"
 
-try:
-    import StorageServer
-except:
-    import StorageServerDummy as StorageServer
+CACHE_DURATION_IN_MINUTES = 10
 
+log = Logger.Logger("VeetleGuideDataSource")
 
 class VeetleGuideDataSource:
 
     def __init__(self):
-        self.cache = StorageServer.StorageServer("plugin.video.veetle", 1)
+        self.cache = VeetleCache.VeetleCache(CACHE_DURATION_IN_MINUTES)
 
     def loadChannels(self):
 
@@ -31,17 +30,20 @@ class VeetleGuideDataSource:
             jsonChannels = self.cache.get("channels")
 
             if jsonChannels is None or len(jsonChannels) == 0:
+                log.notice("Refreshing channel data from: %s" % (URL_VEETLE_GUIDE_LOAD_CHANNELS))
                 response = urllib2.urlopen(URL_VEETLE_GUIDE_LOAD_CHANNELS)
                 jsonChannels = response.read().decode("utf-8")
                 self.cache.set("channels", jsonChannels)
+            else:
+                log.debug("Using cached channel data")
 
             jsonChannels = json.loads(jsonChannels)
 
             for jsonChannel in jsonChannels:
                 channels.append(parseChannel(jsonChannel))
 
-        except ValueError, error_info:
-            print 'Error loading channel list: ' + repr(error_info)
+        except Exception, e:
+            log.error('Error loading channel list: ' + repr(e))
 
         return channels
 
@@ -54,17 +56,20 @@ class VeetleGuideDataSource:
             jsonSchedule = self.cache.get("schedule")
 
             if jsonSchedule is None or len(jsonSchedule) == 0:
+                log.notice("Refreshing schedule data from: %s" %(URL_VEETLE_GUIDE_LOAD_SCHEDULE))
                 response = urllib2.urlopen(URL_VEETLE_GUIDE_LOAD_SCHEDULE)
                 jsonSchedule = response.read().decode("utf-8")
                 self.cache.set("schedule", jsonSchedule)
+            else:
+                log.debug("Using cached schedule data")
 
             jsonSchedule = json.loads(jsonSchedule)
 
             for jsonScheduleItem in jsonSchedule:
                 schedule.append(parseScheduleItem(jsonScheduleItem))
 
-        except ValueError, error_info:
-            print 'Error loading schedule: ' + repr(error_info)
+        except Exception, e:
+            log.error('Error loading schedule: ' + repr(e))
 
         return schedule
 
