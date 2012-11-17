@@ -118,6 +118,9 @@ class VeetleViews:
 
     def renderCategory(self, queryUrl):
 
+        # Set content type for a category view to movies - this will enable more view types like media info
+        xbmcplugin.setContent(self.pluginHandle, 'movies')
+
         categoryId = queryUrl[len(URL_VIEW_CATEGORY):].strip()
 
         # Load the channel list
