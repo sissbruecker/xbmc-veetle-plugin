@@ -1,3 +1,4 @@
+import Logger
 import VeetleData
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import base64
@@ -13,6 +14,8 @@ URL_VIEW_SEARCH = '?search'
 
 URL_AKAMAI_PROXY = 'http://127.0.0.1:64653/veetle/%s'
 
+log = Logger.Logger("VeetleViews")
+
 class VeetleViews:
 
     def __init__(self, pluginUrl, pluginHandle, dataSource):
@@ -26,7 +29,7 @@ class VeetleViews:
     def buildCategoryUrl(self, categoryId):
         return self.baseUrl + URL_VIEW_CATEGORY + str(categoryId)
 
-    def createChannelListItem(self, channel):
+    def createChannelListItem(self, channel, scheduleItems):
 
         channelDisplayTitle = channel.title
 
@@ -38,7 +41,14 @@ class VeetleViews:
             iconImage=channel.logoUrl,
             thumbnailImage=channel.logoUrl)
 
-        infoLabels = {'title': channel.title}
+        infoLabels = {
+            'title': channel.title,
+            'director': channel.userName,
+            'genre': VeetleData.CategoryMap[channel.categoryId].title,
+            'tagline': channel.description,
+            'plot': channel.createScheduleSummary(scheduleItems),
+        }
+
         listItem.setInfo('video', infoLabels)
         listItem.setProperty('IsPlayable', 'true')
 
@@ -46,7 +56,7 @@ class VeetleViews:
 
     def createScheduleListItem(self, scheduleItem):
 
-        displayTitle = '[B]%s[/B] - %s ([COLOR=blue]%s mins[/COLOR])' % (scheduleItem.startTime.strftime('%H:%M'), scheduleItem.title, scheduleItem.duration.seconds / 60)
+        displayTitle = scheduleItem.label()
 
         listItem = xbmcgui.ListItem(
             displayTitle)
@@ -112,6 +122,7 @@ class VeetleViews:
 
         # Load the channel list
         channels = self.dataSource.loadChannels()
+        scheduleItems = self.dataSource.loadSchedule()
 
         # Filter channel for specified category
         channels = channels if categoryId == VeetleData.CategoryAll.id else [channel for channel in channels if channel.categoryId == categoryId]
@@ -122,7 +133,7 @@ class VeetleViews:
         for channel in channels:
 
             url = self.buildChannelUrl(channel.channelId)
-            listItem = self.createChannelListItem(channel)
+            listItem = self.createChannelListItem(channel, scheduleItems)
 
             xbmcplugin.addDirectoryItem(
                 self.pluginHandle,
@@ -174,6 +185,8 @@ class VeetleViews:
         xbmcplugin.endOfDirectory(self.pluginHandle)
 
     def renderUrl(self, queryUrl):
+
+        log.debug("Rendering URL: %s%s" % (self.baseUrl, queryUrl))
 
         if queryUrl.startswith(URL_VIEW_CHANNEL):
             self.renderChannel(queryUrl)

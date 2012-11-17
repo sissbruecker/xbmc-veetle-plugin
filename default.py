@@ -17,6 +17,7 @@
 '''
 
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
+import Logger
 import VeetleGuideDataSource
 import VeetleProxyServer
 import VeetleViews
@@ -26,6 +27,8 @@ pluginHandle = int(sys.argv[1])
 pluginQuery = sys.argv[2]
 __settings__ = xbmcaddon.Addon(id='plugin.video.veetle')
 __language__ = __settings__.getLocalizedString
+
+log = Logger.Logger("Main")
 
 dataSource = VeetleGuideDataSource.VeetleGuideDataSource()
 views = VeetleViews.VeetleViews(pluginUrl, pluginHandle, dataSource)

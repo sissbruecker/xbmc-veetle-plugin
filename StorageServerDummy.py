@@ -14,7 +14,7 @@ class StorageServer:
         return ""
 
     def get(self, name):
-        return "hullo!"
+        return ""
 
     def setMulti(self, name, data):
         return ""

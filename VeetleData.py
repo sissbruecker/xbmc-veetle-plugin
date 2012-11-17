@@ -13,6 +13,8 @@ class VeetleChannel:
         self.description = ''
         self.categoryId = ''
 
+        self.userName = ''
+
         self.popularityIndex = 0
         self.bitRate = 0
 
@@ -20,6 +22,16 @@ class VeetleChannel:
 
         self.currentItem = None
 
+    def createScheduleSummary(self, scheduleItems):
+
+        scheduleItems = [scheduleItem for scheduleItem in scheduleItems if scheduleItem.channelId == self.channelId]
+        summary = ''
+
+        for scheduleItem in scheduleItems:
+            summary += scheduleItem.label()
+            summary += '[CR]'
+
+        return summary
 
 class VeetleScheduleItem:
 
@@ -27,8 +39,11 @@ class VeetleScheduleItem:
 
         self.title = ''
         self.description = ''
-        self.duration = 0
-        self.startTime = 0
+        self.duration = None
+        self.startTime = None
+
+    def label(self):
+        return '[B]%s[/B] - %s ([COLOR=blue]%s mins[/COLOR])' % (self.startTime.strftime('%H:%M'), self.title, self.duration.seconds / 60)
 
 CategoryAll = VeetleCategory('0', 'All')
 CategoryEntertainment = VeetleCategory('10', 'Entertainment')

@@ -90,6 +90,7 @@ def parseChannel(jsonChannel):
     channel.title = jsonChannel['title']
     channel.description = jsonChannel['description']
     channel.categoryId = str(jsonChannel['categoryId'])
+    channel.userName = str(jsonChannel['userName'])
     channel.popularityIndex = jsonChannel['popularityIndex']
     channel.bitRate = jsonChannel['bitRate']
     channel.logoUrl = jsonChannel['logoUrl']

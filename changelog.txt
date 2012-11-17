@@ -1,3 +1,10 @@
+[B]Version 0.2.2[/B]
+- Added more info labels in category view:
+    - Director: Veetle username
+    - Genre: Veetle category
+    - Tagline: Channel description
+    - Plot: Schedule
+
 [B]Version 0.2.1[/B]
 - Fixed caching problem - channels/schedule data is now only cached for 10 minutes
 - Added some basic logging
